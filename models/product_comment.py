@@ -2,8 +2,10 @@ from datetime import datetime
 
 from db import db
 
+from base import BaseModel
 
-class ProductCommentModel(db.Model):
+
+class ProductCommentModel(db.Model, BaseModel):
     __tablename__ = 'products_comments'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -19,7 +21,3 @@ class ProductCommentModel(db.Model):
                 'grade': self.grade,
                 'created_at': self.created_at
                 }
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()

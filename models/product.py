@@ -2,8 +2,10 @@ from datetime import datetime
 
 from db import db
 
+from base import BaseModel
 
-class ProductModel(db.Model):
+
+class ProductModel(db.Model, BaseModel):
     __tablename__ = 'products'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -35,11 +37,3 @@ class ProductModel(db.Model):
     @classmethod
     def find_by_id(cls, _id):
         return cls.query.filter_by(id=_id).first()
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()

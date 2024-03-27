@@ -2,8 +2,10 @@ from datetime import datetime
 
 from db import db
 
+from base import BaseModel
 
-class CategoryModel(db.Model):
+
+class CategoryModel(db.Model, BaseModel):
     __tablename__ = 'categories'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -20,11 +22,3 @@ class CategoryModel(db.Model):
     @classmethod
     def find_by_title(cls, title):
         return cls.query.filter_by(title=title).first()
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
