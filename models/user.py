@@ -2,7 +2,7 @@ from datetime import datetime
 
 from db import db
 
-from base_model import BaseModel
+from models.base_model import BaseModel
 
 
 class UserModel(db.Model, BaseModel):
@@ -16,8 +16,8 @@ class UserModel(db.Model, BaseModel):
     first_name = db.Column(db.String(120), nullable=False)
     last_name = db.Column(db.String(120), nullable=False)
     city = db.Column(db.String(120), nullable=False)
-
-    # profile_image = db.Column(db.Text, nullable=False, default='default.jpg')
+    profile_image = db.Column(db.Text, nullable=False)
+    profile_image_mimetype = db.Column(db.Text, nullable=False)
 
     def json(self):
         return {

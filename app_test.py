@@ -2,9 +2,8 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_smorest import Api
 
-import models
-
 from db import db
+from admin import admin
 from resources.product import blp as ProductBlueprint
 from resources.category import blp as CategoryBlueprint
 from resources.user import blp as UserBlueprint
@@ -23,11 +22,12 @@ def create_app(db_uri=None):
     app.config[
         "OPENAPI_SWAGGER_UI_URL"
     ] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri if db_uri else 'postgresql://postgres:{password}@localhost/{db_name}'
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri if db_uri else 'sqlite:///my.db'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
 
     db.init_app(app)
+    admin.init_app(app)
     api = Api(app)
 
     jwt = JWTManager(app)
@@ -47,4 +47,5 @@ def create_app(db_uri=None):
 
 
 if __name__ == "__main__":
+    # postgresql://postgres:{password}@localhost/{db_name}
     create_app().run(host='0.0.0.0', port=5000)

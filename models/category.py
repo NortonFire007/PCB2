@@ -2,7 +2,7 @@ from datetime import datetime
 
 from db import db
 
-from base_model import BaseModel
+from models.base_model import BaseModel
 
 
 class CategoryModel(db.Model, BaseModel):
@@ -11,8 +11,8 @@ class CategoryModel(db.Model, BaseModel):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
-
-    # bg_image = db.Column(db.Text, nullable=False)
+    bg_image = db.Column(db.Text, nullable=False)
+    bg_image_mimetype = db.Column(db.Text, nullable=False)
 
     def json(self):
         return {'id': self.id,

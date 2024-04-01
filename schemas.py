@@ -22,11 +22,15 @@ class PlainUserSchema(LoginUserSchema):
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
     city = fields.String(required=True)
+    profile_image = fields.String()
+    profile_image_mimetype = fields.String()
 
 
 class PlainCategorySchema(Schema):
     id = fields.Integer(dump_only=True)
     title = fields.String(required=True)
+    bg_image = fields.String(required=True)
+    bg_image_mimetype = fields.String(required=True)
 
 
 class FavouriteSchema(Schema):

@@ -10,3 +10,11 @@ class BaseModel:
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+
+
+def main():
+    pass
+
+
+if __name__ == '__main__':
+    main()

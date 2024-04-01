@@ -1,4 +1,5 @@
 from flask.views import MethodView
+from flask import request
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_token, create_refresh_token
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
@@ -17,14 +18,13 @@ class UserRegister(MethodView):
     def post(self, user_data):
         if UserModel.find_by_email(user_data['email']):
             abort(400, message='A user with that email already exists.')
-
         user = UserModel(
             email=user_data['email'],
             password=pbkdf2_sha256.hash(user_data['password']),
             phone_number=user_data['phone_number'],
             first_name=user_data['first_name'],
             last_name=user_data['last_name'],
-            city=user_data['city']
+            city=user_data['city'],
         )
         user.save_to_db()
 

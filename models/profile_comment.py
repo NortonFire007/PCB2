@@ -2,7 +2,7 @@ from datetime import datetime
 
 from db import db
 
-from base_model import BaseModel
+from models.base_model import BaseModel
 
 
 class ProfileCommentModel(db.Model, BaseModel):

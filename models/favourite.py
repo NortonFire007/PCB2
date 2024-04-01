@@ -1,6 +1,6 @@
 from db import db
 
-from base_model import BaseModel
+from models.base_model import BaseModel
 
 
 class FavouriteModel(db.Model, BaseModel):
