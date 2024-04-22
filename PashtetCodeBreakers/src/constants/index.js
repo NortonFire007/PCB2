@@ -106,3 +106,50 @@ export const footerLinks = [
     ],
   },
 ];
+
+// -----------------------------------------------------------------------
+export const products_1 = [
+  {
+    id: 1,
+    title: 'Handmade Wooden Clock',
+    description: 'Eco-friendly wall clock made from recycled wood.',
+    price: 1500,
+    zsuPrice: 1200.5,
+    reviewsQty: 5,
+    rating: 4.3,
+    createdAt: '2024-04-20T00:00:00Z',
+    categoryId: 1,
+    userId: 1,
+  },
+  {
+    id: 2,
+    title: 'Artisan Ceramic Vase',
+    description: 'Handcrafted ceramic vase inspired by modern art.',
+    price: 2500,
+    zsuPrice: 2000.75,
+    reviewsQty: 3,
+    rating: 4.8,
+    createdAt: '2024-04-20T00:00:00Z',
+    categoryId: 1,
+    userId: 1,
+  },
+];
+
+export const comments = [
+  {
+    id: 1,
+    text: 'Absolutely beautiful clock, the craftsmanship is top-notch!',
+    grade: 5,
+    createdAt: '2024-04-20T00:00:00Z',
+    productId: 1,
+    userId: 1,
+  },
+  {
+    id: 2,
+    text: 'The vase is even more stunning in person. A perfect addition to my home.',
+    grade: 5,
+    createdAt: '2024-04-20T00:00:00Z',
+    productId: 2,
+    userId: 1,
+  },
+];
