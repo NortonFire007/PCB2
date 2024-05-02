@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import ProfileCommentModel
 from schemas import PlainProfileCommentSchema
 
-blp = Blueprint('Profiles Comments', __name__, description='Operations on Profile Comments')
+blp = Blueprint('Profiles_Comments', __name__, description='Operations on Profile Comments')
 
 
 @blp.route('/profiles/comments/<int:profile_id>')

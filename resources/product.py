@@ -1,3 +1,4 @@
+from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -32,7 +33,32 @@ class Product(MethodView):
 class ProductList(MethodView):
     @blp.response(200, PlainProductSchema(many=True))
     def get(self):
-        return ProductModel.query.all()
+        query_key = request.args.get('query')
+        max_price = request.args.get('max_price')
+        min_price = request.args.get('min_price')
+        category_id = request.args.get('category_id')
+        amount = request.args.get('amount')
+
+        query = ProductModel.query
+
+        if query_key:
+            query = query.filter(ProductModel.title.ilike(f'%{query_key}%'))
+
+        if max_price:
+            query = query.filter(ProductModel.price < max_price)
+
+        if min_price:
+            query = query.filter(ProductModel.price > min_price)
+
+        if category_id:
+            query = query.filter(ProductModel.category_id == category_id)
+
+        if amount:
+            query = query.limit(int(amount))
+
+        products = query.all()
+
+        return products
 
     @jwt_required()
     @blp.arguments(PlainProductSchema)

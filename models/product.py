@@ -5,7 +5,7 @@ from db import db
 from models.base_model import BaseModel
 
 
-class ProductModel(db.Model, BaseModel):
+class ProductModel(BaseModel):
     __tablename__ = 'products'
 
     id = db.Column(db.Integer, primary_key=True)

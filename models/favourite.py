@@ -3,7 +3,7 @@ from db import db
 from models.base_model import BaseModel
 
 
-class FavouriteModel(db.Model, BaseModel):
+class FavouriteModel(BaseModel):
     __tablename__ = 'favourites'
 
     id = db.Column(db.Integer, primary_key=True)

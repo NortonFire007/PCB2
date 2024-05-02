@@ -6,7 +6,7 @@ from passlib.handlers.pbkdf2 import pbkdf2_sha256
 from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
-from models import UserModel
+from models import UserModel, CartModel
 from schemas import PlainUserSchema, LoginUserSchema
 
 blp = Blueprint('Users', __name__, description='Operations with users')
@@ -25,8 +25,14 @@ class UserRegister(MethodView):
             first_name=user_data['first_name'],
             last_name=user_data['last_name'],
             city=user_data['city'],
+            profile_image='img',
+            profile_image_mimetype='mimetype'
         )
         user.save_to_db()
+
+        user_cart = CartModel(user_id=user.id)
+
+        user_cart.save_to_db()
 
         return {'message': 'User created successfully.'}, 201
 

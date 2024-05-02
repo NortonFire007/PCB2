@@ -53,3 +53,17 @@ class PlainProfileCommentSchema(Schema):
     grade = fields.Integer(required=True)
     user_profile_id = fields.Integer(required=True)
     user_id = fields.Integer(dump_only=True)
+
+
+class PlainCartSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    user_id = fields.Integer(dump_only=True)
+
+
+class PlainCartItemSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    cart_id = fields.Integer(dump_only=True)
+    product_id = fields.Integer(dump_only=True)
+    quantity = fields.Integer()
+    price = fields.Float()
+    created_at = fields.DateTime()

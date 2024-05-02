@@ -5,7 +5,7 @@ from db import db
 from models.base_model import BaseModel
 
 
-class UserModel(db.Model, BaseModel):
+class UserModel(BaseModel):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)

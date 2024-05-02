@@ -1,7 +1,7 @@
 from db import db
 
 
-class BaseModel:
+class BaseModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)

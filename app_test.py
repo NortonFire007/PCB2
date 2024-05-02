@@ -48,4 +48,4 @@ def create_app(db_uri=None):
 
 if __name__ == "__main__":
     # postgresql://postgres:{password}@localhost/{db_name}
-    create_app().run(host='0.0.0.0', port=5000)
+    create_app().run(host='0.0.0.0', port=5000, debug=True)

@@ -30,7 +30,7 @@ class CategoryList(MethodView):
     @blp.response(201, PlainCategorySchema)
     @blp.arguments(PlainCategorySchema)
     def post(self, category_data):
-        if CategoryModel.find_by_title(category_data['title']):
+        if CategoryModel.find_by_title(category_data.get('title')):
             abort(400, message='A category with that title already exists')
         image = request.files['image']
         if not image:
