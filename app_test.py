@@ -1,9 +1,12 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_smorest import Api
+from flask_cors import CORS
 
 from db import db
 from admin import admin
+from resources.cart import blp as CartBlueprint
+from resources.cart_item import blp as CartItemBlueprint
 from resources.product import blp as ProductBlueprint
 from resources.category import blp as CategoryBlueprint
 from resources.user import blp as UserBlueprint
@@ -14,6 +17,9 @@ from resources.profile_comment import blp as ProfileCommentBlueprint
 
 def create_app(db_uri=None):
     app = Flask(__name__)
+
+    CORS(app)
+
     app.config["API_TITLE"] = "Stores REST API"
     app.config["API_VERSION"] = "v1"
     app.config["OPENAPI_VERSION"] = "3.0.3"
@@ -36,6 +42,8 @@ def create_app(db_uri=None):
     with app.app_context():
         db.create_all()
 
+    api.register_blueprint(CartBlueprint)
+    api.register_blueprint(CartItemBlueprint)
     api.register_blueprint(ProductBlueprint)
     api.register_blueprint(CategoryBlueprint)
     api.register_blueprint(UserBlueprint)

@@ -5,7 +5,7 @@ from db import db
 from models.base_model import BaseModel
 
 
-class ProfileCommentModel(BaseModel):
+class ProfileCommentModel(BaseModel, db.Model):
     __tablename__ = 'profiles_comments'
 
     id = db.Column(db.Integer, primary_key=True)

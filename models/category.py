@@ -5,7 +5,7 @@ from db import db
 from models.base_model import BaseModel
 
 
-class CategoryModel(BaseModel):
+class CategoryModel(BaseModel, db.Model):
     __tablename__ = 'categories'
 
     id = db.Column(db.Integer, primary_key=True)

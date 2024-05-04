@@ -4,7 +4,7 @@ from models.base_model import BaseModel
 from db import db
 
 
-class CartItemModel(BaseModel):
+class CartItemModel(BaseModel, db.Model):
     __tablename__ = 'carts_items'
 
     id = db.Column(db.Integer, primary_key=True)

@@ -14,6 +14,7 @@ blp = Blueprint('Users', __name__, description='Operations with users')
 
 @blp.route('/register')
 class UserRegister(MethodView):
+    @blp.response(201, PlainUserSchema)
     @blp.arguments(PlainUserSchema)
     def post(self, user_data):
         if UserModel.find_by_email(user_data['email']):
@@ -21,9 +22,9 @@ class UserRegister(MethodView):
         user = UserModel(
             email=user_data['email'],
             password=pbkdf2_sha256.hash(user_data['password']),
-            phone_number=user_data['phone_number'],
-            first_name=user_data['first_name'],
-            last_name=user_data['last_name'],
+            tel=user_data['tel'],
+            name=user_data['name'],
+            surname=user_data['surname'],
             city=user_data['city'],
             profile_image='img',
             profile_image_mimetype='mimetype'
@@ -33,8 +34,7 @@ class UserRegister(MethodView):
         user_cart = CartModel(user_id=user.id)
 
         user_cart.save_to_db()
-
-        return {'message': 'User created successfully.'}, 201
+        return user.json()
 
 
 @blp.route("/login")

@@ -18,9 +18,9 @@ class LoginUserSchema(Schema):
 
 
 class PlainUserSchema(LoginUserSchema):
-    phone_number = fields.String(required=True)
-    first_name = fields.String(required=True)
-    last_name = fields.String(required=True)
+    tel = fields.String(required=True)
+    name = fields.String(required=True)
+    surname = fields.String(required=True)
     city = fields.String(required=True)
     profile_image = fields.String()
     profile_image_mimetype = fields.String()

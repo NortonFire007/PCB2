@@ -1,7 +1,7 @@
 from db import db
 
 
-class BaseModel(db.Model):
+class BaseModel:
 
     def save_to_db(self):
         db.session.add(self)
@@ -11,10 +11,3 @@ class BaseModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
