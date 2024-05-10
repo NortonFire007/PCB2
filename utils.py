@@ -17,4 +17,4 @@ def delete_image_from_storage(file_path):
 def create_jwt_token(user):
     access_token = create_access_token(identity=user.id, fresh=True)
     refresh_token = create_refresh_token(user.id)
-    return {"access_token": access_token, "refresh_token": refresh_token}
+    return {"accessToken": access_token, "refreshToken": refresh_token}

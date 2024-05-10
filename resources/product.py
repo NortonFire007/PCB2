@@ -1,12 +1,17 @@
+import os
+
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.utils import secure_filename
 
 from db import db
-from models import ProductModel
+from globals import UPLOAD_FOLDER
+from models import ProductModel, ImageModel
 from schemas import PlainProductSchema
+from utils import allowed_file
 
 blp = Blueprint('Products', __name__, description='Operations on products')
 
@@ -65,12 +70,25 @@ class ProductList(MethodView):
     @blp.response(201, PlainProductSchema)
     def post(self, product_data):
         user_id = get_jwt_identity()
-        product = ProductModel(user_id=user_id, **product_data)
 
-        # try:
-        #     product.save_to_db()
-        # except SQLAlchemyError:
-        #     abort(500, message='An error occurred while inserting the item.')
+        images = request.files.getlist('images')
+        if not images:
+            abort(400, description='No images provided')
+
+        product = ProductModel(user_id=user_id, **product_data)
         product.save_to_db()
+
+        for index, image in enumerate(images):
+            if not image.filename:
+                abort(400, description=f'No filename in file number {index + 1}')
+
+            if allowed_file(image.filename):
+                filename = secure_filename(image.filename)
+                file_path = os.path.join(UPLOAD_FOLDER, filename)
+                image.save(file_path)
+
+                new_image = ImageModel(path=file_path, product_id=product.id,
+                                       is_first=index == 0)
+                new_image.save_to_db()
 
         return product
