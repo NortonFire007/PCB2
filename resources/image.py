@@ -56,7 +56,7 @@ class Image(MethodView):
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             image_file.save(file_path)
 
-            image = ImageModel(**image_data, path=file_path)
+            image = ImageModel(**image_data, path=file_path, product_id=product.id)
             image.save_to_db()
 
         abort(400, description='Invalid file type')
