@@ -14,11 +14,13 @@ class ProductModel(BaseModel, db.Model):
     price = db.Column(db.Integer, nullable=False)
     zsu_price = db.Column(db.Float)
     reviews_qty = db.Column(db.Integer, default=0)
-    # image = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.now())
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    images = db.relationship('ImageModel', backref='products', lazy='dynamic')
+    comments = db.relationship('ProductCommentModel', backref='products', lazy='dynamic')
 
     def json(self):
         return {

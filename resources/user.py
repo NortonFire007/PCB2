@@ -1,13 +1,17 @@
+from http import cookies
+
 from flask.views import MethodView
-from flask import request
+from flask import request, make_response
 from flask_smorest import Blueprint, abort
-from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_token, create_refresh_token
+from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_token
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
 from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
 from models import UserModel, CartModel
+from repository.user import get_user_or_abort
 from schemas import PlainUserSchema, LoginUserSchema
+from utils import create_jwt_token
 
 blp = Blueprint('Users', __name__, description='Operations with users')
 
@@ -44,9 +48,7 @@ class UserLogin(MethodView):
         user = UserModel.find_by_email(user_data["email"])
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
-            access_token = create_access_token(identity=user.id, fresh=True)
-            refresh_token = create_refresh_token(user.id)
-            return {"access_token": access_token, "refresh_token": refresh_token}, 200
+            return create_jwt_token(user), 201
 
         abort(401, message="Invalid credentials.")
 
@@ -55,18 +57,14 @@ class UserLogin(MethodView):
 class User(MethodView):
 
     @blp.response(200, PlainUserSchema)
-    def get(self, user_id):
-        user = UserModel.find_by_id(user_id)
-        if not user:
-            abort(404, message='User not found.')
-        return user
+    def get(self, user_id: int):
+        user = get_user_or_abort(user_id)
+        return user.json()
 
-    def delete(self, user_id):
-        user = UserModel.find_by_id(user_id)
-        if not user:
-            abort(404, message='User not found.')
+    def delete(self, user_id: int):
+        user = get_user_or_abort(user_id)
         user.delete_from_db()
-        return {"message": "User deleted."}, 200
+        return user.json()
 
 
 @blp.route("/refresh")

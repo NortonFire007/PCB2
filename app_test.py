@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_smorest import Api
@@ -5,6 +7,7 @@ from flask_cors import CORS
 
 from db import db
 from admin import admin
+from globals import UPLOAD_FOLDER
 from resources.cart import blp as CartBlueprint
 from resources.cart_item import blp as CartItemBlueprint
 from resources.product import blp as ProductBlueprint
@@ -18,26 +21,30 @@ from resources.profile_comment import blp as ProfileCommentBlueprint
 def create_app(db_uri=None):
     app = Flask(__name__)
 
-    CORS(app)
+    CORS(app, supports_credentials=True)
 
     app.config["API_TITLE"] = "Stores REST API"
     app.config["API_VERSION"] = "v1"
     app.config["OPENAPI_VERSION"] = "3.0.3"
     app.config["OPENAPI_URL_PREFIX"] = "/"
     app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
-    app.config[
-        "OPENAPI_SWAGGER_UI_URL"
-    ] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
+    app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
     app.config["SQLALCHEMY_DATABASE_URI"] = db_uri if db_uri else 'sqlite:///my.db'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
 
     db.init_app(app)
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     admin.init_app(app)
     api = Api(app)
 
     jwt = JWTManager(app)
     app.config['JWT_SECRET_KEY'] = 'S:{ifZ:}BEjk,pJp/zOF/(xuebyeu0gQe7G*r=FE'
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
+    app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
+    app.config['JWT_BLACKLIST_ENABLED'] = True
+    app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+    app.config['JWT_COOKIE_SECURE'] = True
 
     with app.app_context():
         db.create_all()

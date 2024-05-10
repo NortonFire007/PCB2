@@ -67,3 +67,9 @@ class PlainCartItemSchema(Schema):
     quantity = fields.Integer()
     price = fields.Float()
     created_at = fields.DateTime()
+
+
+class PlainImageSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    is_first = fields.Boolean()
+    product_id = fields.Integer(dump_only=True)
