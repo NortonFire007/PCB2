@@ -7,7 +7,7 @@ from flask_smorest import Blueprint
 from werkzeug.utils import secure_filename
 
 from globals import UPLOAD_FOLDER
-from models import ImageModel
+from models import ImageModel, ProductModel
 from schemas import PlainImageSchema
 from utils import allowed_file, delete_image_from_storage
 
@@ -29,13 +29,22 @@ class ImageList(MethodView):
 
         return query.all()
 
+
 @blp.route('/images')
 class Image(MethodView):
+    @jwt_required
     @blp.arguments(PlainImageSchema)
     @blp.response(200, PlainImageSchema)
     def post(self, image_data):
         if 'image' not in request.files:
             abort(400, description='No image part')
+
+        user_id = get_jwt_identity()
+
+        product = ProductModel.query.filter_by(id=image_data['product_id']).first()
+
+        if product.user_id != user_id:
+            abort(403, description='You are not authorized to add image')
 
         image_file = request.files['image']
 
