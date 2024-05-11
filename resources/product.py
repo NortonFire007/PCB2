@@ -1,9 +1,11 @@
+import json
 import os
 
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 
@@ -66,12 +68,19 @@ class ProductList(MethodView):
         return products
 
     @jwt_required()
-    @blp.arguments(PlainProductSchema)
-    @blp.response(201, PlainProductSchema)
-    def post(self, product_data):
+    def post(self):
         user_id = get_jwt_identity()
 
+        if 'data' not in request.form:
+            abort(400, description='Missing JSON data')
+
+        json_data = json.loads(request.form['data'])
+        try:
+            product_data = PlainProductSchema().load(json_data)
+        except ValidationError as e:
+            abort(400, message=e.messages)
         images = request.files.getlist('images')
+
         if not images:
             abort(400, description='No images provided')
 
@@ -87,8 +96,7 @@ class ProductList(MethodView):
                 file_path = os.path.join(UPLOAD_FOLDER, filename)
                 image.save(file_path)
 
-                new_image = ImageModel(path=file_path, product_id=product.id,
-                                       is_first=index == 0)
+                new_image = ImageModel(path=file_path, product_id=product.id, is_first=index == 0)
                 new_image.save_to_db()
 
-        return product
+        return PlainProductSchema().dump(product), 201

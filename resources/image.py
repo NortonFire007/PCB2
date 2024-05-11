@@ -29,38 +29,6 @@ class ImageList(MethodView):
 
         return query.all()
 
-
-@blp.route('/images')
-class Image(MethodView):
-    @jwt_required
-    @blp.arguments(PlainImageSchema)
-    @blp.response(200, PlainImageSchema)
-    def post(self, image_data):
-        if 'image' not in request.files:
-            abort(400, description='No image part')
-
-        user_id = get_jwt_identity()
-
-        product = ProductModel.query.filter_by(id=image_data['product_id']).first()
-
-        if product.user_id != user_id:
-            abort(403, description='You are not authorized to add image')
-
-        image_file = request.files['image']
-
-        if not image_file.filename:
-            abort(400, description='No filename')
-
-        if image_file and allowed_file(image_file.filename):
-            filename = secure_filename(image_file.filename)
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
-            image_file.save(file_path)
-
-            image = ImageModel(**image_data, path=file_path, product_id=product.id)
-            image.save_to_db()
-
-        abort(400, description='Invalid file type')
-
     # @jwt_required
     # @blp.response(204, PlainImageSchema)
     # def delete(self, image_id):
