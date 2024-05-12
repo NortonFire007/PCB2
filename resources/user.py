@@ -30,8 +30,7 @@ class UserRegister(MethodView):
             name=user_data['name'],
             surname=user_data['surname'],
             city=user_data['city'],
-            profile_image='img',
-            profile_image_mimetype='mimetype'
+            profile_image='img'
         )
         user.save_to_db()
 

@@ -19,8 +19,8 @@ class ProductModel(BaseModel, db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    images = db.relationship('ImageModel', backref='products', lazy='dynamic')
-    comments = db.relationship('ProductCommentModel', backref='products', lazy='dynamic')
+    images = db.relationship('ImageModel', backref='products', cascade='all, delete-orphan', lazy='dynamic')
+    comments = db.relationship('ProductCommentModel', backref='products', cascade='all, delete-orphan', lazy='dynamic')
 
     def json(self):
         return {

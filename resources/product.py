@@ -1,12 +1,11 @@
 import json
 import os
 
-from flask import request
+from flask import request, jsonify
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from marshmallow import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 
 from db import db
@@ -24,7 +23,15 @@ class Product(MethodView):
     @blp.response(200, PlainProductSchema)
     def get(self, product_id):
         product = ProductModel.query.get_or_404(product_id)
-        return product.json()
+        product_data = product.json()
+
+        if request.args.get('images'):
+            product_data['images'] = product.images.all()
+
+        if request.args.get('comments'):
+            product_data['comments'] = product.comments.all()
+
+        return product_data
 
     @jwt_required()
     def delete(self, product_id):
@@ -45,6 +52,7 @@ class ProductList(MethodView):
         min_price = request.args.get('min_price')
         category_id = request.args.get('category_id')
         amount = request.args.get('amount')
+        include_image = request.args.get('image')
 
         query = ProductModel.query
 
@@ -65,7 +73,20 @@ class ProductList(MethodView):
 
         products = query.all()
 
-        return products
+        if include_image:
+            product_data = []
+            for product in products:
+                product_dict = product.json()
+
+                image = product.images.filter_by(is_first=True).first()
+                if image:
+                    product_dict['image'] = image.path
+
+                product_data.append(product_dict)
+
+            return jsonify(product_data)
+        else:
+            return products
 
     @jwt_required()
     def post(self):
@@ -87,13 +108,14 @@ class ProductList(MethodView):
         product = ProductModel(user_id=user_id, **product_data)
         product.save_to_db()
 
+        product_folder = secure_filename(product.name)
         for index, image in enumerate(images):
             if not image.filename:
                 abort(400, description=f'No filename in file number {index + 1}')
 
             if allowed_file(image.filename):
                 filename = secure_filename(image.filename)
-                file_path = os.path.join(UPLOAD_FOLDER, filename)
+                file_path = os.path.join(UPLOAD_FOLDER, 'products', product_folder, filename)
                 image.save(file_path)
 
                 new_image = ImageModel(path=file_path, product_id=product.id, is_first=index == 0)
