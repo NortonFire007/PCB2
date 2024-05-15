@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from db import db
+from globals import UPLOAD_FOLDER
 
 from models.base_model import BaseModel
 
@@ -16,8 +17,15 @@ class UserModel(BaseModel, db.Model):
     name = db.Column(db.String(120), nullable=False)
     surname = db.Column(db.String(120), nullable=False)
     city = db.Column(db.String(120), nullable=False)
-    profile_image = db.Column(db.String(240), nullable=False, default='images/default_profile_pic.png')
+    profile_image = db.Column(db.String(240), nullable=False, default=f'{UPLOAD_FOLDER}/users/default_profile_pic.png')
 
+    def json(self):
+        return {'id': self.id,
+                'tel': self.tel,
+                'name': self.name,
+                'surname': self.surname,
+                'city': self.city,
+                'profile_image': self.profile_image}
     @classmethod
     def find_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
