@@ -10,7 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from db import db
 from models import UserModel, CartModel
 from repository.user import get_user_or_abort
-from schemas import PlainUserSchema, LoginUserSchema
+from schemas import UserDetailSchema, UserLoginSchema
 from utils import create_jwt_token
 
 blp = Blueprint('Users', __name__, description='Operations with users')
@@ -18,8 +18,8 @@ blp = Blueprint('Users', __name__, description='Operations with users')
 
 @blp.route('/register')
 class UserRegister(MethodView):
-    @blp.response(201, PlainUserSchema)
-    @blp.arguments(PlainUserSchema)
+    @blp.response(201, UserDetailSchema)
+    @blp.arguments(UserDetailSchema)
     def post(self, user_data):
         if UserModel.find_by_email(user_data['email']):
             abort(400, message='A user with that email already exists.')
@@ -42,7 +42,7 @@ class UserRegister(MethodView):
 
 @blp.route("/login")
 class UserLogin(MethodView):
-    @blp.arguments(LoginUserSchema)
+    @blp.arguments(UserLoginSchema)
     def post(self, user_data):
         user = UserModel.find_by_email(user_data["email"])
 
@@ -55,10 +55,10 @@ class UserLogin(MethodView):
 @blp.route("/user/<int:user_id>")
 class User(MethodView):
 
-    @blp.response(200, PlainUserSchema)
+    @blp.response(200, UserDetailSchema)
     def get(self, user_id: int):
         user = get_user_or_abort(user_id)
-        return user.json()
+        return user
 
     def delete(self, user_id: int):
         user = get_user_or_abort(user_id)

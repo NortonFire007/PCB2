@@ -14,10 +14,3 @@ class ProfileCommentModel(BaseModel, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
     user_profile_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
-    def json(self):
-        return {'id': self.id,
-                'text': self.text,
-                'grade': self.grade,
-                'created_at': self.created_at
-                }

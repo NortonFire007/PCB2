@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_smorest import Blueprint
 
 from models import CartItemModel
-from schemas import PlainCartItemSchema
+from schemas import CartItemSchema
 
 blp = Blueprint('Cart_Items', __name__, description='Operations related to cart items')
 
@@ -12,7 +12,7 @@ blp = Blueprint('Cart_Items', __name__, description='Operations related to cart 
 @blp.route('/carts/items/<int:user_id>')
 class CartItemList(MethodView):
     @jwt_required()
-    @blp.response(200, PlainCartItemSchema(many=True))
+    @blp.response(200, CartItemSchema(many=True))
     def get(self, user_id):
         cart_items = CartItemModel.query.filter_by(user_id=user_id).all()
         return cart_items
@@ -21,8 +21,8 @@ class CartItemList(MethodView):
 @blp.route('/carts/items')
 class CartItem(MethodView):
     @jwt_required()
-    @blp.arguments(PlainCartItemSchema)
-    @blp.response(201, PlainCartItemSchema)
+    @blp.arguments(CartItemSchema)
+    @blp.response(201, CartItemSchema)
     def post(self, cart_item_data):
         user_id = get_jwt_identity()
         if user_id != cart_item_data.get('user_id'):

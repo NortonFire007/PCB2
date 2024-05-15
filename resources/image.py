@@ -1,22 +1,19 @@
 import os
 
-from flask import request, abort
+from flask import request, abort, redirect, url_for, send_from_directory
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_smorest import Blueprint
-from werkzeug.utils import secure_filename
 
-from globals import UPLOAD_FOLDER
-from models import ImageModel, ProductModel
-from schemas import PlainImageSchema
-from utils import allowed_file, delete_image_from_storage
+from globals import IMAGE_UPLOAD_FOLDER
+from models import ImageModel
+from schemas import ImageSchema
 
 blp = Blueprint('Images', __name__, description='Operations on images')
 
 
 @blp.route('/images/<int:product_id>')
 class ImageList(MethodView):
-    @blp.response(200, PlainImageSchema(many=True))
+    @blp.response(200, ImageSchema(many=True))
     def get(self, product_id):
         first = request.args.get('first')
         query = ImageModel.query
@@ -45,3 +42,9 @@ class ImageList(MethodView):
     #     image.delete_from_db()
     #
     #     return image
+
+
+@blp.route('/images/display/<filename>')
+class ImageDisplay(MethodView):
+    def get(self, filename):
+        return send_from_directory(IMAGE_UPLOAD_FOLDER, filename)

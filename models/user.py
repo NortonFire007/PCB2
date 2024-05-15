@@ -18,17 +18,6 @@ class UserModel(BaseModel, db.Model):
     city = db.Column(db.String(120), nullable=False)
     profile_image = db.Column(db.String(240), nullable=False, default='images/default_profile_pic.png')
 
-    def json(self):
-        return {'id': self.id,
-                'name': self.name,
-                'surname': self.surname,
-                'email': self.email,
-                'tel': self.tel,
-                'city': self.city,
-                }
-
-
-
     @classmethod
     def find_by_email(cls, email):
         return cls.query.filter_by(email=email).first()

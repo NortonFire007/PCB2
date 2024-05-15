@@ -6,17 +6,16 @@ from collections import Counter
 
 from models import ProductCommentModel
 from repository import product_comment as prod_comment_repo
-from schemas import PlainProductCommentSchema, PlainCategorySchema
+from schemas import ProductCommentSchema, CategorySchema
 
 blp = Blueprint('Products_Comments', __name__, description='Operations on Product Comments')
 
 
 @blp.route('/products/comments/<int:product_id>')
 class ProductCommentList(MethodView):
-    @blp.response(200, PlainProductCommentSchema(many=True))
+    @blp.response(200, ProductCommentSchema(many=True))
     def get(self, product_id):
-        comments = ProductCommentModel.query.filter_by(product_id=product_id).all()
-        return comments
+        return ProductCommentModel.query.filter_by(product_id=product_id).all()
 
 
 @blp.route('/info/products/comments/<int:product_id>')
@@ -27,7 +26,7 @@ class ProductCommentsInfo(MethodView):
 
 @blp.route('/products/comments/<int:product_comment_id>')
 class ProductCommentSingle(MethodView):
-    @blp.response(410, PlainProductCommentSchema)
+    @blp.response(410, ProductCommentSchema)
     @jwt_required()
     def delete(self, product_comment_id):
         user_id = get_jwt_identity()
@@ -40,8 +39,8 @@ class ProductCommentSingle(MethodView):
 @blp.route('/products/comments')
 class ProductComment(MethodView):
     @jwt_required()
-    @blp.arguments(PlainProductCommentSchema)
-    @blp.response(201, PlainProductCommentSchema)
+    @blp.arguments(ProductCommentSchema)
+    @blp.response(201, ProductCommentSchema)
     def post(self, comment_data):
         user_id = get_jwt_identity()
         if ProductCommentModel.query.filter_by(product_id=comment_data['product_id'],

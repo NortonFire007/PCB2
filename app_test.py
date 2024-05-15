@@ -7,7 +7,7 @@ from flask_cors import CORS
 
 from db import db
 from admin import admin
-from globals import UPLOAD_FOLDER
+from globals import IMAGE_UPLOAD_FOLDER
 from resources.cart import blp as CartBlueprint
 from resources.cart_item import blp as CartItemBlueprint
 from resources.product import blp as ProductBlueprint
@@ -16,6 +16,7 @@ from resources.user import blp as UserBlueprint
 from resources.favourite import blp as FavouritesBlueprint
 from resources.product_comment import blp as ProductCommentBlueprint
 from resources.profile_comment import blp as ProfileCommentBlueprint
+from resources.image import blp as ImageBlueprint
 
 
 def create_app(db_uri=None):
@@ -34,7 +35,7 @@ def create_app(db_uri=None):
     app.config["PROPAGATE_EXCEPTIONS"] = True
 
     db.init_app(app)
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['UPLOAD_FOLDER'] = IMAGE_UPLOAD_FOLDER
     admin.init_app(app)
     api = Api(app)
 
@@ -57,6 +58,7 @@ def create_app(db_uri=None):
     api.register_blueprint(FavouritesBlueprint)
     api.register_blueprint(ProductCommentBlueprint)
     api.register_blueprint(ProfileCommentBlueprint)
+    api.register_blueprint(ImageBlueprint)
 
     return app
 

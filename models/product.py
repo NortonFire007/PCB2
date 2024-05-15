@@ -19,22 +19,20 @@ class ProductModel(BaseModel, db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    images = db.relationship('ImageModel', backref='products', cascade='all, delete-orphan', lazy='dynamic')
-    comments = db.relationship('ProductCommentModel', backref='products', cascade='all, delete-orphan', lazy='dynamic')
+    images = db.relationship('ImageModel', backref='product', cascade='all, delete-orphan', lazy='dynamic')
+    comments = db.relationship('ProductCommentModel', backref='product', cascade='all, delete-orphan', lazy='dynamic')
 
     def json(self):
-        return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'price': self.price,
-            'zsu_price': self.zsu_price,
-            'reviews_qty': self.reviews_qty,
-            'rating': self.rating,
-            'created_at': self.created_at,
-            'category_id': self.category_id,
-            'user_id': self.user_id,
-        }
+        return {'id': self.id,
+                'title': self.title,
+                'description': self.description,
+                'price': self.price,
+                'zsu_price': self.zsu_price,
+                'reviews_qty': self.reviews_qty,
+                'rating': self.rating,
+                'created_at': self.created_at,
+                'category_id': self.category_id,
+                'user_id': self.user_id, }
 
     @classmethod
     def find_by_id(cls, _id):
