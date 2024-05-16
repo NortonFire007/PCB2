@@ -1,7 +1,6 @@
-import os
 from http import HTTPStatus
 
-from flask import request, abort, redirect, url_for, send_from_directory
+from flask import request, send_from_directory
 from flask.views import MethodView
 from flask_smorest import Blueprint
 

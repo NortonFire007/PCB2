@@ -2,12 +2,6 @@ import os
 
 from flask_jwt_extended import create_access_token, create_refresh_token
 
-from globals import ALLOWED_EXTENSIONS
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 def delete_image_from_storage(file_path):
     if os.path.exists(file_path):

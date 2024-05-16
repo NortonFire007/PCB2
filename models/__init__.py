@@ -1,4 +1,3 @@
-from models.cart import CartModel
 from models.cart_item import CartItemModel
 from models.user import UserModel
 from models.product import ProductModel

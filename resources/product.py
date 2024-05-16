@@ -1,5 +1,5 @@
-import json
-import os
+from json import loads
+from os.path import join
 from http import HTTPStatus
 from uuid import uuid4
 
@@ -114,7 +114,7 @@ class ProductList(MethodView):
         if 'data' not in request.form:
             abort(HTTPStatus.BAD_REQUEST, description='Missing JSON data')
 
-        json_data = json.loads(request.form['data'])
+        json_data = loads(request.form['data'])
         try:
             product_data = ProductTemplateSchema().load(json_data)
         except ValidationError as e:
@@ -132,7 +132,7 @@ class ProductList(MethodView):
                 abort(HTTPStatus.BAD_REQUEST, description=f'No filename provided for image {image.filename}')
 
             filename = f"{uuid4()}.{image.filename.split('.')[-1]}"
-            full_path = os.path.join(PRODUCT_IMAGE_UPLOAD_FOLDER, filename)
+            full_path = join(PRODUCT_IMAGE_UPLOAD_FOLDER, filename)
             image.save(full_path)
 
             new_image = ImageModel(path=full_path, product_id=product.id, is_first=index == 0)

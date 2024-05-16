@@ -3,8 +3,6 @@ from http import HTTPStatus
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from sqlalchemy.exc import SQLAlchemyError
-from collections import Counter
 
 from models import ProductCommentModel
 from repository import product_comment as prod_comment_repo
