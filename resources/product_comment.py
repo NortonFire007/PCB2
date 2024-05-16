@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -6,14 +8,14 @@ from collections import Counter
 
 from models import ProductCommentModel
 from repository import product_comment as prod_comment_repo
-from schemas import ProductCommentSchema, CategorySchema
+from schemas import ProductCommentSchema, PlainProductCommentSchema
 
 blp = Blueprint('Products_Comments', __name__, description='Operations on Product Comments')
 
 
 @blp.route('/products/comments/<int:product_id>')
 class ProductCommentList(MethodView):
-    @blp.response(200, ProductCommentSchema(many=True))
+    @blp.response(HTTPStatus.OK, ProductCommentSchema(many=True))
     def get(self, product_id):
         return ProductCommentModel.query.filter_by(product_id=product_id).all()
 
@@ -26,7 +28,7 @@ class ProductCommentsInfo(MethodView):
 
 @blp.route('/products/comments/<int:product_comment_id>')
 class ProductCommentSingle(MethodView):
-    @blp.response(410, ProductCommentSchema)
+    @blp.response(HTTPStatus.GONE, ProductCommentSchema)
     @jwt_required()
     def delete(self, product_comment_id):
         user_id = get_jwt_identity()
@@ -39,13 +41,13 @@ class ProductCommentSingle(MethodView):
 @blp.route('/products/comments')
 class ProductComment(MethodView):
     @jwt_required()
-    @blp.arguments(ProductCommentSchema)
-    @blp.response(201, ProductCommentSchema)
+    @blp.arguments(PlainProductCommentSchema)
+    @blp.response(HTTPStatus.CREATED, PlainProductCommentSchema)
     def post(self, comment_data):
         user_id = get_jwt_identity()
         if ProductCommentModel.query.filter_by(product_id=comment_data['product_id'],
                                                user_id=user_id).first():
-            abort(400, message='You already commented on this product')
+            abort(HTTPStatus.BAD_REQUEST, message='You already commented on this product')
         product_comment = ProductCommentModel(user_id=user_id, **comment_data)
         product_comment.save_to_db()
         prod_comment_repo.update_product_rating(comment_data['product_id'])

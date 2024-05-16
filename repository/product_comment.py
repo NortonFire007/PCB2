@@ -17,3 +17,4 @@ def update_product_rating(product_id):
             total_grade = sum(comment.grade for comment in comments)
             average_rating = total_grade / len(comments)
             product.rating = average_rating
+            product.save_to_db()

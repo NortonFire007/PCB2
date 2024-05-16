@@ -21,6 +21,7 @@ class ProductModel(BaseModel, db.Model):
 
     images = db.relationship('ImageModel', backref='product', cascade='all, delete-orphan', lazy='dynamic')
     comments = db.relationship('ProductCommentModel', backref='product', cascade='all, delete-orphan', lazy='dynamic')
+    favourites = db.relationship('FavouriteModel', backref='product', cascade='all, delete-orphan')
 
     def json(self):
         return {'id': self.id,

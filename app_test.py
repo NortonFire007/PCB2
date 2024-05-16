@@ -1,3 +1,4 @@
+import secrets
 from datetime import timedelta
 
 from flask import Flask
@@ -7,8 +8,7 @@ from flask_cors import CORS
 
 from db import db
 from admin import admin
-from globals import IMAGE_UPLOAD_FOLDER
-from resources.cart import blp as CartBlueprint
+from globals import PRODUCT_IMAGE_UPLOAD_FOLDER
 from resources.cart_item import blp as CartItemBlueprint
 from resources.product import blp as ProductBlueprint
 from resources.category import blp as CategoryBlueprint
@@ -21,6 +21,8 @@ from resources.image import blp as ImageBlueprint
 
 def create_app(db_uri=None):
     app = Flask(__name__)
+
+    app.secret_key = secrets.token_hex(16)
 
     CORS(app, supports_credentials=True)
 
@@ -35,22 +37,22 @@ def create_app(db_uri=None):
     app.config["PROPAGATE_EXCEPTIONS"] = True
 
     db.init_app(app)
-    app.config['UPLOAD_FOLDER'] = IMAGE_UPLOAD_FOLDER
+    app.config['UPLOAD_FOLDER'] = PRODUCT_IMAGE_UPLOAD_FOLDER
     admin.init_app(app)
     api = Api(app)
 
     jwt = JWTManager(app)
     app.config['JWT_SECRET_KEY'] = 'S:{ifZ:}BEjk,pJp/zOF/(xuebyeu0gQe7G*r=FE'
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=30)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
     app.config['JWT_BLACKLIST_ENABLED'] = True
     app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
     app.config['JWT_COOKIE_SECURE'] = True
-
+    print(app.config)
     with app.app_context():
         db.create_all()
 
-    api.register_blueprint(CartBlueprint)
+
     api.register_blueprint(CartItemBlueprint)
     api.register_blueprint(ProductBlueprint)
     api.register_blueprint(CategoryBlueprint)

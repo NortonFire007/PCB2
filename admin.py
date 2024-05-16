@@ -5,7 +5,6 @@ from flask_admin.form import ImageUploadField
 import models
 from db import db
 
-
 admin = Admin()
 
 
@@ -15,6 +14,7 @@ class ProductModelView(ModelView):
     }
 
 
+admin.add_view(ModelView(models.CartItemModel, db.session))
 admin.add_view(ModelView(models.UserModel, db.session))
 admin.add_view(ProductModelView(models.ProductModel, db.session))
 admin.add_view(ModelView(models.CategoryModel, db.session))

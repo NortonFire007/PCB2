@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -11,7 +13,7 @@ blp = Blueprint('Profiles_Comments', __name__, description='Operations on Profil
 
 @blp.route('/profiles/comments/<int:profile_id>')
 class ProfileCommentList(MethodView):
-    @blp.response(200, ProfileCommentSchema(many=True))
+    @blp.response(HTTPStatus.OK, ProfileCommentSchema(many=True))
     def get(self, profile_id):
         comments = ProfileCommentModel.query.filter_by(user_profile_id=profile_id).all()
         return comments
@@ -21,12 +23,12 @@ class ProfileCommentList(MethodView):
 class ProfileComment(MethodView):
     @jwt_required()
     @blp.arguments(ProfileCommentSchema)
-    @blp.response(201, ProfileCommentSchema)
+    @blp.response(HTTPStatus.CREATED, ProfileCommentSchema)
     def post(self, comment_data):
         user_id = get_jwt_identity()
         if ProfileCommentModel.query.filter_by(user_profile_id=comment_data['user_profile_id'],
                                                user_id=user_id).first():
-            abort(400, message='You already commented on this profile')
+            abort(HTTPStatus.BAD_REQUEST, message='You already commented on this profile')
         profile_comment = ProfileCommentModel(user_id=user_id, **comment_data)
         profile_comment.save_to_db()
         return profile_comment.json()

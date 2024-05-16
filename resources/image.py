@@ -1,10 +1,11 @@
 import os
+from http import HTTPStatus
 
 from flask import request, abort, redirect, url_for, send_from_directory
 from flask.views import MethodView
 from flask_smorest import Blueprint
 
-from globals import IMAGE_UPLOAD_FOLDER
+from globals import PRODUCT_IMAGE_UPLOAD_FOLDER
 from models import ImageModel
 from schemas import ImageSchema
 
@@ -13,7 +14,7 @@ blp = Blueprint('Images', __name__, description='Operations on images')
 
 @blp.route('/images/<int:product_id>')
 class ImageList(MethodView):
-    @blp.response(200, ImageSchema(many=True))
+    @blp.response(HTTPStatus.OK, ImageSchema(many=True))
     def get(self, product_id):
         first = request.args.get('first')
         query = ImageModel.query
@@ -47,4 +48,4 @@ class ImageList(MethodView):
 @blp.route('/images/display/<filename>')
 class ImageDisplay(MethodView):
     def get(self, filename):
-        return send_from_directory(IMAGE_UPLOAD_FOLDER, filename)
+        return send_from_directory(PRODUCT_IMAGE_UPLOAD_FOLDER, filename)

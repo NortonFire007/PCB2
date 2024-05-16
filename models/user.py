@@ -19,6 +19,9 @@ class UserModel(BaseModel, db.Model):
     city = db.Column(db.String(120), nullable=False)
     profile_image = db.Column(db.String(240), nullable=False, default=f'{UPLOAD_FOLDER}/users/default_profile_pic.png')
 
+    products = db.relationship('ProductModel', backref='user', lazy='dynamic')
+    comments = db.relationship('ProductCommentModel', backref='user', lazy='dynamic')
+
     def json(self):
         return {'id': self.id,
                 'tel': self.tel,
@@ -26,6 +29,7 @@ class UserModel(BaseModel, db.Model):
                 'surname': self.surname,
                 'city': self.city,
                 'profile_image': self.profile_image}
+
     @classmethod
     def find_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
