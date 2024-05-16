@@ -59,7 +59,7 @@ class ProfileCommentSchema(Schema):
 
 class CartItemSchema(Schema):
     id = fields.Integer(dump_only=True)
-    cart_id = fields.Integer(required=True)
+    user_id = fields.Integer(required=True)
     product_id = fields.Integer(required=True)
     quantity = fields.Integer(required=True)
     price = fields.Float(required=True)
