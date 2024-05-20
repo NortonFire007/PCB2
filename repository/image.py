@@ -1,17 +1,7 @@
-from http import HTTPStatus
-
-from flask import abort
-from os import path
-
-from globals import CATEGORY_IMAGE_UPLOAD_FOLDER
+from os import remove
+from os.path import exists
 
 
-def process_category_icon(icon):
-    filename = icon.filename
-    if not filename or '.ico' not in filename:
-        abort(HTTPStatus.BAD_REQUEST, description='Bad file provided for icon')
-    full_path = path.join(CATEGORY_IMAGE_UPLOAD_FOLDER, filename)
-    icon.save(full_path)
-
-    return full_path
-
+def delete_image_from_storage(file_path):
+    if exists(file_path):
+        remove(file_path)

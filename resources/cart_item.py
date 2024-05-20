@@ -7,20 +7,20 @@ from http import HTTPStatus
 from models import CartItemModel
 from schemas import CartItemSchema
 
-blp = Blueprint('Cart_Items', __name__, description='Operations related to cart items')
+Blp = Blueprint('Cart_Items', __name__, description='Operations related to cart items')
 
 
-@blp.route('/carts/items')
+@Blp.route('/carts/items')
 class CartItemList(MethodView):
     @jwt_required()
-    @blp.response(HTTPStatus.OK, CartItemSchema(many=True))
+    @Blp.response(HTTPStatus.OK, CartItemSchema(many=True))
     def get(self):
         user_id = get_jwt_identity()
         return CartItemModel.query.filter_by(user_id=user_id).all()
 
     @jwt_required()
-    @blp.arguments(CartItemSchema)
-    @blp.response(HTTPStatus.CREATED, CartItemSchema)
+    @Blp.arguments(CartItemSchema)
+    @Blp.response(HTTPStatus.CREATED, CartItemSchema)
     def post(self, cart_item_data):
         user_id = get_jwt_identity()
 
@@ -32,10 +32,10 @@ class CartItemList(MethodView):
         return cart_item
 
 
-@blp.route('/carts/items/<int:product_id>')
+@Blp.route('/carts/items/<int:product_id>')
 class CartItem(MethodView):
     @jwt_required()
-    @blp.response(HTTPStatus.GONE, CartItemSchema)
+    @Blp.response(HTTPStatus.GONE, CartItemSchema)
     def delete(self, product_id):
         user_id = get_jwt_identity()
         cart_item = CartItemModel.query.filter_by(product_id=product_id, user_id=user_id)

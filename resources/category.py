@@ -1,44 +1,61 @@
+from csv import DictReader
+from io import StringIO
+
 from flask.views import MethodView
-from flask_smorest import Blueprint, abort
+from flask_jwt_extended import jwt_required
+from flask_smorest import Blueprint
 from flask import request
 from http import HTTPStatus
 
+from marshmallow import ValidationError
+
 from models import CategoryModel
-from repository.image import process_category_icon
 from schemas import CategorySchema
 
-blp = Blueprint('Categories', __name__, description='Operations on categories')
+
+Blp = Blueprint('Categories', __name__, description='Operations on categories')
 
 
-@blp.route('/category/<int:category_id>')
+@Blp.route('/category/<int:category_id>')
 class Category(MethodView):
-    @blp.response(HTTPStatus.OK, CategorySchema)
+    @Blp.response(HTTPStatus.OK, CategorySchema)
     def get(self, category_id):
         return CategoryModel.query.get_or_404(category_id)
 
-    @blp.response(HTTPStatus.GONE, CategorySchema)
+    @Blp.response(HTTPStatus.GONE, CategorySchema)
     def delete(self, category_id):
         category = CategoryModel.query.get_or_404(category_id)
         category.delete_from_db()
         return category
 
 
-@blp.route('/categories')
+@Blp.route('/categories')
 class CategoryList(MethodView):
-    @blp.response(HTTPStatus.CREATED, CategorySchema(many=True))
+    @Blp.response(HTTPStatus.CREATED, CategorySchema(many=True))
     def get(self):
         return CategoryModel.query.all()
 
-    @blp.arguments(CategorySchema)
-    @blp.response(HTTPStatus.CREATED, CategorySchema)
-    def post(self, category_data):
-        icon = request.files.get('icon')
-        if not icon:
-            abort(HTTPStatus.BAD_REQUEST, message='No icon uploaded')
-        if CategoryModel.find_by_title(category_data.get('title')):
-            abort(HTTPStatus.BAD_REQUEST, message='A category with that title already exists')
+    @jwt_required()
+    @Blp.response(HTTPStatus.CREATED)
+    def post(self):
+        if 'file' not in request.files:
+            return {'message': 'No file part in the request'}, HTTPStatus.BAD_REQUEST
 
-        icon_path = process_category_icon(icon)
-        category = CategoryModel(**category_data, icon=icon_path)
-        category.save_to_db()
-        return category
+        file = request.files['file']
+
+        if file.filename == '':
+            return {'message': 'No selected file'}, HTTPStatus.BAD_REQUEST
+
+        if not file.filename.endswith('.csv'):
+            return {'message': 'File is not a CSV'}, HTTPStatus.BAD_REQUEST
+
+        stream = StringIO(file.stream.read().decode("UTF8"), newline=None)
+        csv_input = DictReader(stream)
+        for row in csv_input:
+            try:
+                category_data = CategorySchema().load(row)
+            except ValidationError as err:
+                return {'message': err.messages}, HTTPStatus.BAD_REQUEST
+            category = CategoryModel(**category_data)
+            category.save_to_db()
+

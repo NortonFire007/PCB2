@@ -6,20 +6,20 @@ from http import HTTPStatus
 from models import FavouriteModel
 from schemas import FavouriteSchema
 
-blp = Blueprint('Favourites', __name__, description='User favourites')
+Blp = Blueprint('Favourites', __name__, description='User favourites')
 
 
-@blp.route('/favourites')
+@Blp.route('/favourites')
 class Favourites(MethodView):
     @jwt_required()
-    @blp.response(HTTPStatus.OK, FavouriteSchema(many=True))
+    @Blp.response(HTTPStatus.OK, FavouriteSchema(many=True))
     def get(self):
         user_id = get_jwt_identity()
         return FavouriteModel.query.filter_by(user_id=user_id)
 
     @jwt_required()
-    @blp.arguments(FavouriteSchema)
-    @blp.response(HTTPStatus.CREATED, FavouriteSchema)
+    @Blp.arguments(FavouriteSchema)
+    @Blp.response(HTTPStatus.CREATED, FavouriteSchema)
     def post(self, favourites_data):
         user_id = get_jwt_identity()
         if favourite := FavouriteModel.query.filter_by(user_id=user_id,

@@ -6,17 +6,17 @@ from flask_jwt_extended import JWTManager
 from flask_smorest import Api
 from flask_cors import CORS
 
-from db import db
 from admin import admin
+from db import db
 from globals import PRODUCT_IMAGE_UPLOAD_FOLDER
-from resources.cart_item import blp as CartItemBlueprint
-from resources.product import blp as ProductBlueprint
-from resources.category import blp as CategoryBlueprint
-from resources.user import blp as UserBlueprint
-from resources.favourite import blp as FavouritesBlueprint
-from resources.product_comment import blp as ProductCommentBlueprint
-from resources.profile_comment import blp as ProfileCommentBlueprint
-from resources.image import blp as ImageBlueprint
+from resources.cart_item import Blp as CartItemBlueprint
+from resources.product import Blp as ProductBlueprint
+from resources.category import Blp as CategoryBlueprint
+from resources.user import Blp as UserBlueprint
+from resources.favourite import Blp as FavouritesBlueprint
+from resources.product_comment import Blp as ProductCommentBlueprint
+from resources.profile_comment import Blp as ProfileCommentBlueprint
+from resources.image import Blp as ImageBlueprint
 
 
 def create_app(db_uri=None):
@@ -48,10 +48,8 @@ def create_app(db_uri=None):
     app.config['JWT_BLACKLIST_ENABLED'] = True
     app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
     app.config['JWT_COOKIE_SECURE'] = True
-    print(app.config)
     with app.app_context():
         db.create_all()
-
 
     api.register_blueprint(CartItemBlueprint)
     api.register_blueprint(ProductBlueprint)

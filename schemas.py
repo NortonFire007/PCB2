@@ -1,5 +1,8 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import Schema, fields
+from marshmallow.validate import Range, OneOf
+
 from models import UserModel
+from repository.product_comment import get_grades_info
 
 
 class UserLoginSchema(Schema):
@@ -19,6 +22,7 @@ class UserDetailSchema(UserLoginSchema):
 class CategorySchema(Schema):
     id = fields.Integer(dump_only=True)
     title = fields.String(required=True)
+    icon = fields.String(required=True)
 
 
 class FavouriteSchema(Schema):
@@ -30,7 +34,7 @@ class FavouriteSchema(Schema):
 class PlainProductCommentSchema(Schema):
     id = fields.Integer(dump_only=True)
     text = fields.String()
-    grade = fields.Integer(required=True, validate=validate.Range(min=1, max=5))
+    grade = fields.Integer(required=True, validate=Range(min=1, max=5))
     product_id = fields.Integer(required=True)
     user_id = fields.Integer(dump_only=True)
     created_at = fields.DateTime(dump_only=True, format='%Y-%m-%d %H:%M:%S')
@@ -42,11 +46,11 @@ class ProductCommentSchema(PlainProductCommentSchema):
 
     def get_product_comment_image(self, product_comment):
         user = UserModel.query.get(product_comment.user_id)
-        return user.profile_image if user else None
+        return user.profile_image
 
     def get_product_comment_username(self, product_comment):
         user = UserModel.query.get(product_comment.user_id)
-        return user.name if user else None
+        return user.name
 
 
 class ProfileCommentSchema(Schema):
@@ -59,11 +63,13 @@ class ProfileCommentSchema(Schema):
 
 class CartItemSchema(Schema):
     id = fields.Integer(dump_only=True)
-    user_id = fields.Integer(required=True)
+    user_id = fields.Integer()
     product_id = fields.Integer(required=True)
     quantity = fields.Integer(required=True)
     price = fields.Float(required=True)
     created_at = fields.DateTime()
+
+    product = fields.Nested('ProductTemplateSchema', only=['title', 'rating', 'image'])
 
 
 class ImageSchema(Schema):
@@ -73,32 +79,30 @@ class ImageSchema(Schema):
     product_id = fields.Integer()
 
 
-class ProductPageSchema(Schema):
+class ProductSchema(Schema):
     id = fields.Integer(dump_only=True)
     title = fields.String(required=True)
     description = fields.String(required=True)
     price = fields.Integer(required=True)
+    zsu_price = fields.Float(required=True)
     rating = fields.Float(dump_only=True)
-    zsu_price = fields.Float(dump_only=True)
-    user_id = fields.Integer(required=True, load_only=True)
+    user_id = fields.Integer(load_only=True)
     category_id = fields.Integer(required=True)
+
+
+class ProductPageSchema(ProductSchema):
     images = fields.List(fields.Nested('ImageSchema', only=['path']))
     comments = fields.List(
         fields.Nested('ProductCommentSchema',
                       only=['text', 'grade', 'created_at', 'product_id', 'user_id', 'user_image', 'user_name']))
     product_owner = fields.Nested('UserDetailSchema', only=['id', 'name', 'surname', 'profile_image'])
-    rating_info = fields.Dict()
+    rating_info = fields.Method('get_rating')
+
+    def get_rating(self, obj):
+        return get_grades_info(obj.id)
 
 
-class ProductTemplateSchema(Schema):
-    id = fields.Integer(dump_only=True)
-    title = fields.String(required=True)
-    description = fields.String(required=True)
-    price = fields.Integer(required=True)
-    rating = fields.Float(dump_only=True)
-    zsu_price = fields.Float(dump_only=True)
-    user_id = fields.Integer(dump_only=True)
-    category_id = fields.Integer(required=True)
+class ProductTemplateSchema(ProductSchema):
     image = fields.Method('get_first_image')
 
     def get_first_image(self, product):

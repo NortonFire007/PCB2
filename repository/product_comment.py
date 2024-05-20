@@ -9,12 +9,10 @@ def get_grades_info(product_id: int):
     return grades_info
 
 
-def update_product_rating(product_id):
-    product = ProductModel.find_by_id(product_id)
-    if product:
-        comments = ProductCommentModel.query.filter_by(product_id=product_id).all()
-        if comments:
-            total_grade = sum(comment.grade for comment in comments)
-            average_rating = total_grade / len(comments)
-            product.rating = average_rating
-            product.save_to_db()
+def update_product_data(product):
+    comments = ProductCommentModel.query.filter_by(product_id=product.id).all()
+    total_grade = sum(comment.grade for comment in comments)
+    average_rating = total_grade / len(comments)
+    product.rating = average_rating
+    product.reviews_qty += 1
+    product.save_to_db()

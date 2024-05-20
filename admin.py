@@ -2,8 +2,10 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import ImageUploadField
 
-import models
+
 from db import db
+from models import CartItemModel, UserModel, ProductModel, CategoryModel, ProfileCommentModel, ProductCommentModel, \
+    FavouriteModel
 
 admin = Admin()
 
@@ -14,10 +16,10 @@ class ProductModelView(ModelView):
     }
 
 
-admin.add_view(ModelView(models.CartItemModel, db.session))
-admin.add_view(ModelView(models.UserModel, db.session))
-admin.add_view(ProductModelView(models.ProductModel, db.session))
-admin.add_view(ModelView(models.CategoryModel, db.session))
-admin.add_view(ModelView(models.ProfileCommentModel, db.session))
-admin.add_view(ModelView(models.ProductCommentModel, db.session))
-admin.add_view(ModelView(models.FavouriteModel, db.session))
+admin.add_view(ModelView(CartItemModel, db.session))
+admin.add_view(ModelView(UserModel, db.session))
+admin.add_view(ProductModelView(ProductModel, db.session))
+admin.add_view(ModelView(CategoryModel, db.session))
+admin.add_view(ModelView(ProfileCommentModel, db.session))
+admin.add_view(ModelView(ProductCommentModel, db.session))
+admin.add_view(ModelView(FavouriteModel, db.session))

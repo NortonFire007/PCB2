@@ -1,7 +1,6 @@
 from datetime import datetime
-
-from models.base_model import BaseModel
 from db import db
+from models.base_model import BaseModel
 
 
 class CartItemModel(BaseModel, db.Model):

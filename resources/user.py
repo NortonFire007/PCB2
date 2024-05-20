@@ -6,35 +6,30 @@ from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_tok
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
 
 from models import UserModel
-from repository.user import get_user_or_abort
 from schemas import UserDetailSchema, UserLoginSchema
 from utils import create_jwt_token
 
-blp = Blueprint('Users', __name__, description='Operations with users')
+Blp = Blueprint('Users', __name__, description='Operations with users')
 
 
-@blp.route('/register')
+@Blp.route('/register')
 class UserRegister(MethodView):
-    @blp.response(HTTPStatus.CREATED, UserDetailSchema)
-    @blp.arguments(UserDetailSchema)
+    @Blp.response(HTTPStatus.CREATED, UserDetailSchema)
+    @Blp.arguments(UserDetailSchema)
     def post(self, user_data):
         if UserModel.find_by_email(user_data['email']):
             abort(HTTPStatus.BAD_REQUEST, message='A user with that email already exists.')
-        user = UserModel(
-            email=user_data['email'],
-            password=pbkdf2_sha256.hash(user_data['password']),
-            tel=user_data['tel'],
-            name=user_data['name'],
-            surname=user_data['surname'],
-            city=user_data['city'],
-        )
+
+        user_data['password'] = pbkdf2_sha256.hash(user_data['password'])
+
+        user = UserModel(**user_data)
         user.save_to_db()
         return user.json()
 
 
-@blp.route("/login")
+@Blp.route("/login")
 class UserLogin(MethodView):
-    @blp.arguments(UserLoginSchema)
+    @Blp.arguments(UserLoginSchema)
     def post(self, user_data):
         user = UserModel.find_by_email(user_data["email"])
 
@@ -44,21 +39,21 @@ class UserLogin(MethodView):
         abort(HTTPStatus.BAD_REQUEST, message="Invalid credentials.")
 
 
-@blp.route("/user/<int:user_id>")
+@Blp.route("/user/<int:user_id>")
 class User(MethodView):
 
-    @blp.response(HTTPStatus.OK, UserDetailSchema)
+    @Blp.response(HTTPStatus.OK, UserDetailSchema)
     def get(self, user_id: int):
-        user = get_user_or_abort(user_id)
+        user = UserModel.query.get_or_404(user_id)
         return user
 
     def delete(self, user_id: int):
-        user = get_user_or_abort(user_id)
+        user = UserModel.query.get_or_404(user_id)
         user.delete_from_db()
-        return user.json()
+        return user
 
 
-@blp.route("/refresh")
+@Blp.route("/refresh")
 class TokenRefresh(MethodView):
     @jwt_required(refresh=True)
     def post(self):
