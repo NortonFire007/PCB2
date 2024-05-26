@@ -1,0 +1,240 @@
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  background: #f6f5f7;
+  display: grid;
+  place-content: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.container {
+  position: relative;
+  width: 850px;
+  height: 500px;
+  background-color: #fff;
+  box-shadow: 25px 30px 55px #5557;
+  border-radius: 13px;
+  overflow: hidden;
+}
+
+.form-container {
+  position: absolute;
+  width: 60%;
+  height: 100%;
+  padding: 0px 40px;
+  transition: all 0.6s ease-in-out;
+}
+
+.form-container.sign-up-container {
+  opacity: 0;
+  z-index: 1;
+}
+
+.form-container.sign-in-container {
+  z-index: 2;
+}
+
+.form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0px 50px;
+}
+
+h1 {
+  color: #fc670a;
+}
+
+.social-container {
+  margin: 20px 0px;
+}
+
+.social-container a {
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px 5px;
+  height: 40px;
+  width: 40px;
+}
+
+span {
+  font-size: 12px;
+}
+
+.input-group {
+  position: relative;
+  margin: 8px 0px;
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #f3f3f3;
+  border: none;
+  outline: none;
+}
+
+.input-group i {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #ccc;
+}
+
+button {
+  border-radius: 20px;
+  border: 1px solid #fc670a;
+  background: #f2a261;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 12px 45px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 17px;
+  transition: 80ms ease-in;
+}
+
+button:hover {
+  background: #fff;
+  color: #fc670a;
+}
+
+.overlay-container {
+  position: absolute;
+  top: 0;
+  left: 60%;
+  width: 40%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  z-index: 9;
+}
+
+.overlay {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(255, 79, 19, 0.5579481792717087) 0%,
+    rgba(235, 199, 158, 1) 70%
+  );
+  color: #fff;
+  left: -150%;
+  height: 100%;
+  width: 250%;
+  transition: transform 0.6s ease-in-out;
+}
+
+.overlay-panel {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0px 40px;
+  text-align: center;
+  height: 100%;
+  width: 340px;
+  transition: 0.6s ease-in-out;
+}
+
+.overlay-left {
+  right: 60%;
+  transform: translateX(-12%);
+}
+
+.overlay-right {
+  right: 0;
+  transform: translateX(0%);
+}
+
+.overlay-active .overlay-container {
+  transform: translateX(-150%);
+}
+
+.overlay-active .overlay {
+  transform: translateX(50%);
+}
+
+.overlay-active .overlay-left {
+  transform: translateX(25%);
+}
+
+.overlay-active .overlay-right {
+  transform: translateX(35%);
+}
+
+.overlay-active .sign-in-container {
+  transform: translateX(20%);
+  opacity: 0;
+}
+
+.overlay-active .sign-up-container {
+  transform: translateX(66.7%);
+  opacity: 1;
+  z-index: 5;
+  animation: show 0.6s;
+}
+
+.btn {
+  width: 143.67px;
+  height: 52.32px;
+  border: none;
+  border-radius: 100px;
+  font-size: 14.33px;
+  font-weight: 700;
+  color: #fff;
+  background-color: #fc670a;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:hover {
+  background-color: #fff;
+  color: #fc670a;
+}
+
+@keyframes show {
+  0%,
+  50% {
+    opacity: 0;
+    z-index: 1;
+  }
+  50.1%,
+  100% {
+    opacity: 1;
+    z-index: 5;
+  }
+}
+
+.btnScaled {
+  animation: scaleBtn 0.6s;
+}
+
+@keyframes scaleBtn {
+  0% {
+    width: 143.67px;
+  }
+  50% {
+    width: 250px;
+  }
+  100% {
+    width: 143.67px;
+  }
+}
