@@ -5,7 +5,7 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_smorest import Blueprint
 
-from globals import PRODUCT_IMAGE_UPLOAD_FOLDER
+from constants import PRODUCT_IMAGE_UPLOAD_FOLDER
 from models import ImageModel
 from repository.image import delete_image_from_storage
 from schemas import ImageSchema
@@ -18,9 +18,8 @@ class ImageList(MethodView):
     @Blp.response(HTTPStatus.OK, ImageSchema(many=True))
     def get(self, product_id):
         first = request.args.get('first')
-        query = ImageModel.query
 
-        query = query.filter_by(product_id=product_id).all()
+        query = ImageModel.query.filter_by(product_id=product_id).all()
 
         if bool(first):
             query = query.filter_by(is_first=True)

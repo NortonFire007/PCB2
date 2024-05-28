@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from db import db
-from globals import UPLOAD_FOLDER
+from constants import UPLOAD_FOLDER
 
 from models.base_model import BaseModel
 

@@ -4,20 +4,10 @@ from uuid import uuid4
 
 from flask import abort
 from db import db
-from marshmallow import ValidationError
 
 
-from globals import PRODUCT_IMAGE_UPLOAD_FOLDER, ALLOWED_IMAGE_EXTENSIONS
+from constants import PRODUCT_IMAGE_UPLOAD_FOLDER, ALLOWED_IMAGE_EXTENSIONS
 from models import FavouriteModel, ProductModel, ImageModel
-from schemas import ProductSchema
-
-
-def get_valid_product_data(json_data):
-    try:
-        product_data = ProductSchema().load(json_data)
-    except ValidationError as e:
-        abort(HTTPStatus.BAD_REQUEST, message=e.messages)
-    return product_data
 
 
 def save_product_images(images, product_id):
@@ -31,7 +21,7 @@ def save_product_images(images, product_id):
         if image_extension := image.filename.split('.')[-1] not in ALLOWED_IMAGE_EXTENSIONS:
             abort(HTTPStatus.BAD_REQUEST, description=f'Bad extension {image_extension}')
 
-        filename = f"{uuid4()}.{image.filename.split('.')[-1]}"
+        filename = f"{uuid4()}.{image_extension}"
         full_path = join(PRODUCT_IMAGE_UPLOAD_FOLDER, filename)
         db.session.add(ImageModel(path=full_path, product_id=product_id, is_first=index == 0))
         image.save(full_path)
@@ -40,7 +30,7 @@ def save_product_images(images, product_id):
 
 def build_search_query(args, query, model, allowed_fields: dict):
     if args.get('query'):
-        query = query.filter(model.title.ilike(f'%{args['query']}%'))
+        query = query.filter(model.title.ilike(f"{args['query']}%"))
 
     if max_price := args.get('max_price'):
         query = query.filter(model.price < max_price)
@@ -52,25 +42,26 @@ def build_search_query(args, query, model, allowed_fields: dict):
         query = query.filter(model.category_id == category_id)
 
     if order := args.get('order'):
-
-        if order.startswith('-'):
-            order_direction = 'desc'
-            order = order[1:]
-        else:
+        order_conditions = order.split(',')
+        for order_condition in order_conditions:
             order_direction = 'asc'
+            if order_condition.startswith('-'):
+                order_direction = 'desc'
+                order_condition = order_condition[1:]
 
-        if order in allowed_fields:
-            order_column = allowed_fields[order]
-            if order_direction == 'desc':
-                query = query.order_by(order_column.desc())
+            if order_condition in allowed_fields:
+                order_column = allowed_fields[order_condition]
+                if order_direction == 'desc':
+                    query = query.order_by(order_column.desc())
+                else:
+                    query = query.order_by(order_column.asc())
             else:
-                query = query.order_by(order_column.asc())
-        else:
-            return {"message": f"Invalid order field: {order}"}, HTTPStatus.BAD_REQUEST
+                return {"message": f"Invalid order field: {order_condition}"}, HTTPStatus.BAD_REQUEST
 
     if amount := args.get('amount'):
         query = query.limit(amount)
 
+    print(query.statement)
     return query
 
 

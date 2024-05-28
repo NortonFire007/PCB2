@@ -8,7 +8,8 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from models import ProductModel
 from schemas import ProductTemplateSchema, ProductPageSchema, ProductSchema
-from repository.product import build_search_query, get_products_for_you, save_product_images, get_valid_product_data
+from repository.product import build_search_query, get_products_for_you, save_product_images
+from utils import get_valid_model_data
 
 ALLOWED_SEARCH_FIELDS = {'price': ProductModel.price,
                          'novelty': ProductModel.created_at,
@@ -35,6 +36,13 @@ class Product(MethodView):
         return product
 
 
+@Blp.route('/products/user/<int:user_id>')
+class Product(MethodView):
+    @Blp.response(HTTPStatus.OK, ProductTemplateSchema(many=True))
+    def get(self, user_id):
+        return ProductModel.query.filter_by(user_id=user_id).all()
+
+
 @Blp.route('/products/for_you')
 class ProductsForYou(MethodView):
     @jwt_required()
@@ -54,7 +62,7 @@ class ProductsAdd(MethodView):
         if 'data' not in request.form:
             abort(HTTPStatus.BAD_REQUEST, description='Missing JSON data')
 
-        product_data = get_valid_product_data(loads(request.form['data']))
+        product_data = get_valid_model_data(loads(request.form['data']), ProductSchema)
 
         product = ProductModel(**product_data, user_id=user_id)
 

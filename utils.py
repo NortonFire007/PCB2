@@ -1,8 +1,17 @@
-import os
 from datetime import datetime
 from http import HTTPStatus
 
+from flask import abort
 from flask_jwt_extended import create_access_token, create_refresh_token
+from marshmallow import ValidationError
+
+
+def get_valid_model_data(json_data, schema):
+    try:
+        product_data = schema().load(json_data)
+    except ValidationError as e:
+        abort(HTTPStatus.BAD_REQUEST, message=e.messages)
+    return product_data
 
 
 def format_datetime(datetime_str: str):

@@ -12,3 +12,5 @@ class CartItemModel(BaseModel, db.Model):
     quantity = db.Column(db.Integer)
     price = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.now)
+
+    product = db.relationship('ProductModel', backref='cart_items')

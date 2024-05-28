@@ -8,7 +8,7 @@ from flask_cors import CORS
 
 from admin import admin
 from db import db
-from globals import PRODUCT_IMAGE_UPLOAD_FOLDER
+from constants import PRODUCT_IMAGE_UPLOAD_FOLDER
 from resources.cart_item import Blp as CartItemBlueprint
 from resources.product import Blp as ProductBlueprint
 from resources.category import Blp as CategoryBlueprint
